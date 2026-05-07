@@ -1,0 +1,311 @@
+
+
+コンテンツへ
+Gmail でのスクリーン リーダーの使用
+1 / 72
+（件名なし）
+受信トレイ
+
+鈴木俊治 <tiforcetoshi@gmail.com>
+添付ファイル
+22:30 (21 分前)
+To 自分
+
+
+ 1 個の添付ファイル
+  •  Gmail によってスキャン済み
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>入構前チェック 自動送信</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+    background: #1a0a0a;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 36px 28px;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  }
+  .logo { text-align: center; margin-bottom: 24px; }
+  .logo-bar {
+    background: #8b1a1a;
+    color: white;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+    display: inline-block;
+    border-radius: 2px;
+    margin-bottom: 6px;
+  }
+  h1 { font-size: 16px; color: #333; text-align: center; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 12px; color: #888; text-align: center; margin-bottom: 28px; }
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: #f9f5f5;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-left: 3px solid #8b1a1a;
+  }
+  .info-label { font-size: 11px; color: #888; }
+  .info-value { font-size: 13px; color: #222; font-weight: 600; }
+  .date-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: #f0f7ff;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    border-left: 3px solid #2a6db5;
+  }
+  .date-label { font-size: 11px; color: #5a8abf; }
+  .date-value { font-size: 13px; color: #1a4a80; font-weight: 700; }
+  .toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: #f9f5f5;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-left: 3px solid #8b1a1a;
+  }
+  .toggle-label { font-size: 11px; color: #888; }
+  .toggle-wrap { display: flex; align-items: center; gap: 8px; }
+  .toggle-text { font-size: 12px; color: #555; font-weight: 600; min-width: 72px; text-align: right; }
+  .toggle { position: relative; width: 48px; height: 26px; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #ccc;
+    border-radius: 26px;
+    transition: 0.3s;
+  }
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px; width: 20px;
+    left: 3px; bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+  }
+  input:checked + .slider { background: #8b1a1a; }
+  input:checked + .slider:before { transform: translateX(22px); }
+  .input-row { margin-bottom: 16px; }
+  .input-label { font-size: 11px; color: #888; margin-bottom: 4px; padding-left: 4px; }
+  .input-field {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #ddd;
+    border-left: 3px solid #8b1a1a;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #222;
+    background: #fafafa;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-field:focus { border-color: #8b1a1a; background: #fff; }
+  .btn {
+    width: 100%;
+    padding: 16px;
+    background: #8b1a1a;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .btn:hover { background: #6d1414; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { background: #aaa; cursor: not-allowed; transform: none; }
+  .status {
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    text-align: center;
+    display: none;
+  }
+  .status.sending { display: block; background: #fff8e1; color: #856404; }
+  .status.success { display: block; background: #e8f5e9; color: #2e7d32; font-weight: 700; }
+  .status.error { display: block; background: #fdecea; color: #c62828; }
+  .reset-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    background: none;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #888;
+    cursor: pointer;
+    font-family: inherit;
+    display: none;
+  }
+  .reset-btn:hover { background: #f5f5f5; }
+  .note { margin-top: 14px; font-size: 10px; color: #bbb; text-align: center; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">
+    <div class="logo-bar">KMT INC.</div>
+    <h1>入構前チェックフォーム</h1>
+    <p class="subtitle">四日市工場</p>
+  </div>
+
+  <div class="info-row">
+    <span class="info-label">氏名</span>
+    <span class="info-value">鈴木 俊治</span>
+  </div>
+  <div class="info-row">
+    <span class="info-label">所属プロダクト</span>
+    <span class="info-value">Safety</span>
+  </div>
+
+  <div class="toggle-row">
+    <span class="toggle-label">PC持ち込み</span>
+    <div class="toggle-wrap">
+      <span class="toggle-text" id="pcLabel">持ち込む</span>
+      <label class="toggle">
+        <input type="checkbox" id="pcToggle" checked onchange="updatePC()">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="info-row">
+    <span class="info-label">持ち込み禁止物品</span>
+    <span class="info-value">なし</span>
+  </div>
+  <div class="info-row" style="margin-bottom:16px;">
+    <span class="info-label">第三者確認</span>
+    <span class="info-value">実施済み</span>
+  </div>
+
+  <div class="input-row">
+    <div class="input-label">確認者氏名（毎日変更可）</div>
+    <input type="text" id="confirmer" class="input-field" value="kmt栗林" placeholder="確認者の氏名を入力">
+  </div>
+
+  <div class="date-row">
+    <span class="date-label">入場日（自動）</span>
+    <span class="date-value" id="today"></span>
+  </div>
+
+  <button class="btn" id="submitBtn" onclick="submitForm()">送　信</button>
+  <button class="reset-btn" id="resetBtn" onclick="resetForm()">もう一度送信する</button>
+  <div class="status" id="status"></div>
+  <p class="note">※代理入力禁止。送信前に実際の入構確認を行ってください。</p>
+</div>
+
+<script>
+  const now = new Date();
+  const y = now.getFullYear();
+  const mo = now.getMonth() + 1;
+  const d = now.getDate();
+  document.getElementById('today').textContent =
+    `${y}年${String(mo).padStart(2,'0')}月${String(d).padStart(2,'0')}日`;
+
+  function updatePC() {
+    const checked = document.getElementById('pcToggle').checked;
+    document.getElementById('pcLabel').textContent = checked ? '持ち込む' : '持ち込まない';
+  }
+
+  function submitForm() {
+    const btn = document.getElementById('submitBtn');
+    const status = document.getElementById('status');
+    const resetBtn = document.getElementById('resetBtn');
+    const pcBring = document.getElementById('pcToggle').checked;
+    const confirmer = document.getElementById('confirmer').value.trim();
+
+    if (!confirmer) {
+      status.className = 'status error';
+      status.style.display = 'block';
+      status.textContent = '⚠️ 確認者氏名を入力してください。';
+      return;
+    }
+
+    btn.disabled = true;
+    status.className = 'status sending';
+    status.style.display = 'block';
+    status.textContent = '送信中...';
+
+    const formId = '1FAIpQLSdkRdK3qjWWK3vrOu93EZA6RN3WelxdWQwalVMWUPkObPRPxg';
+    const url = `https://docs.google.com/forms/d/e/${formId}/formResponse`;
+
+    const params = new URLSearchParams();
+    params.append('entry.1095614385', '鈴木俊治');
+    params.append('entry.269098431_year', String(y));
+    params.append('entry.269098431_month', String(mo));
+    params.append('entry.269098431_day', String(d));
+    params.append('entry.965370204', 'Safety');
+    params.append('entry.414240546', pcBring ? '持ち込む' : '持ち込まない');
+    if (pcBring) {
+      params.append('entry.663985530', '了解しました。');
+    }
+    params.append('entry.14770255', '実施済み');
+    params.append('entry.1446194288', confirmer);
+    params.append('fvv', '1');
+    params.append('pageHistory', pcBring ? '0,1,2,3,4,5,7,8' : '0,1,2,3,5,7,8');
+
+    fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString()
+    })
+    .then(() => {
+      status.className = 'status success';
+      status.style.display = 'block';
+      status.textContent = '✅ 送信完了！お疲れ様です。';
+      btn.textContent = '送信済み ✓';
+      resetBtn.style.display = 'block';
+    })
+    .catch(() => {
+      status.className = 'status error';
+      status.style.display = 'block';
+      status.textContent = '❌ エラーが発生しました。再度お試しください。';
+      btn.disabled = false;
+    });
+  }
+
+  function resetForm() {
+    const btn = document.getElementById('submitBtn');
+    const status = document.getElementById('status');
+    const resetBtn = document.getElementById('resetBtn');
+    btn.disabled = false;
+    btn.textContent = '送　信';
+    status.style.display = 'none';
+    resetBtn.style.display = 'none';
+  }
+</script>
+</body>
+</html>
+nyuko_form.html
+nyuko_form.html を表示しています。
